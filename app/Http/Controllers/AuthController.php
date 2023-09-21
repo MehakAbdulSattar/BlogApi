@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 
 class AuthController extends Controller
@@ -25,6 +27,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
+
+        $user->assignRole('Admin');
 
         return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
     }
@@ -46,5 +50,55 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Login failed'], 401);
     }
+    
+    public function logout(Request $request)
+    {
+        // Revoke the user's current token, effectively logging them out
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logout successful'], 200);
+    }
+
+
+// ...
+
+public function deleteUser(Request $request)
+    {
+        $user = $request->user();
+
+        // Validate the request (you can add more validation rules as needed)
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        // Check if the provided password matches the user's current password
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password'], 401);
+        }
+
+        // Use a database transaction to ensure data consistency
+        DB::beginTransaction();
+
+        try {
+            // Revoke all of the user's tokens, effectively logging them out
+            $user->tokens->each(function ($token) {
+                $token->delete();
+            });
+
+            // Delete the user's account
+            $user->delete();
+
+            // Commit the transaction
+            DB::commit();
+
+            return response()->json(['message' => 'Account deleted successfully'], 200);
+        } catch (\Exception $e) {
+            // Something went wrong, rollback the transaction
+            DB::rollback();
+
+            return response()->json(['message' => 'Failed to delete account'], 500);
+        }
+    }
+
 }
 
