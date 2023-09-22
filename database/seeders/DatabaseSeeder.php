@@ -19,5 +19,18 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmai.com',
             'password'=> 'admin@123',
         ]);
+
+        $guest = \App\Models\User::factory()->create([
+            'id' => 0,
+            'name' => 'guest',
+            'email' => 'guest@gmail.com',
+            'password'=> 'guest@123',
+        ]);
+
+        $guest->assignRole('User');
+        
+        $user->assignRole('Admin');
+
+        
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Comment;
 
 class CommentController extends Controller
@@ -14,21 +15,21 @@ class CommentController extends Controller
             'comment' => 'required|max:500',
             'post_id' => 'required',
         ]);
-
+        
         $comment = new Comment;
         $comment->comment = $request->input('comment');
-        $user=auth()->user()->id;
+        $user=Auth::user();
         if(!$user)
         {
             $comment->user_id=0;
         }
         else
         {
-            $comment->user_id = $user; // Assign the user ID to the comment.
+            $comment->user_id = $user->id; // Assign the user ID to the comment.
         }
         $comment->post_id = $request-> input('post_id');
         $comment->save();
-
+        
         // Prepare a JSON response indicating success
         $response = [
             'message' => 'Comment added successfully',
@@ -43,7 +44,7 @@ class CommentController extends Controller
         // Check if the authenticated user is the owner of the comment or an admin (you can customize this logic)
         $user = Auth::user();
         
-        if (!$user || ($comment->user_id !== $user->id )) {
+        if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 

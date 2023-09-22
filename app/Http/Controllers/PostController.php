@@ -111,7 +111,7 @@ class PostController extends Controller
     {
        $post=Post::find($id);
         // Check if the authenticated user is the owner of the post
-        if ($post->user_id !== Auth::user()->id) {
+        if ($post->user_id !== Auth::user()->id && !Auth::user()->hasRole('Admin')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
@@ -132,5 +132,22 @@ class PostController extends Controller
         ]);
     }
 
+
+    public function showPost($id)
+    {
+        // Find the post by its ID
+        $post = Post::find($id);
+
+        // Check if the post exists
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        if ($post->user_id !== Auth::user()->id && !Auth::user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        // Return the post as a JSON response
+        return response()->json(['post' => $post], 200);
+    }
 
 }

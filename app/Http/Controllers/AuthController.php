@@ -28,10 +28,11 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $user->assignRole('Admin');
+        $user->assignRole('User');
 
         return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
     }
+
 
     public function login(Request $request)
     {
@@ -45,11 +46,17 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
             $token = $user->createToken('token')->plainTextToken;
-            return response()->json(['message' => 'Login successful', 'access_token' => $token], 200);
+
+            return response()->json([
+                'message' => 'Login successful',
+                'user_id' => $user->id,
+                'access_token' => $token
+            ], 200);
         }
 
         return response()->json(['message' => 'Login failed'], 401);
     }
+
     
     public function logout(Request $request)
     {
@@ -62,28 +69,31 @@ class AuthController extends Controller
 
 // ...
 
-public function deleteUser(Request $request)
+public function deleteUser(Request $request,$id)
     {
-        $user = $request->user();
+        // Get the user ID from the request
 
-        // Validate the request (you can add more validation rules as needed)
-        $request->validate([
-            'password' => 'required|string',
-        ]);
+        // Find the user by ID
+        $user = User::find($id);
+    
 
-        // Check if the provided password matches the user's current password
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Incorrect password'], 401);
+        // Check if the user exists
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
         }
+
 
         // Use a database transaction to ensure data consistency
         DB::beginTransaction();
 
         try {
             // Revoke all of the user's tokens, effectively logging them out
-            $user->tokens->each(function ($token) {
-                $token->delete();
-            });
+            if(Auth::user()===$user)
+            {
+                $user->tokens->each(function ($token) {
+                    $token->delete();
+                });
+            }
 
             // Delete the user's account
             $user->delete();
@@ -99,6 +109,18 @@ public function deleteUser(Request $request)
             return response()->json(['message' => 'Failed to delete account'], 500);
         }
     }
+
+    public function showAllUsers()
+    {
+    
+        $users = User::all();
+    
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => $users,
+        ]);
+    }
+    
 
 }
 
