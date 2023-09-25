@@ -64,3 +64,21 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+
+Project name: 
+Blog Project 
+
+Description: 
+It is a project focus on laravel spatie, in which there are three UserRoles. 1- User, 2- Admin, 3- Guest.
+User have permission to do crud(create, read, update, delete) operations on its post and create comment on other user's posts after authentication. Admin have permission to delete users, comment and post. They have also permission to get all users and posts. Guest have permission to get all posts and create comment against user's post.
+
+Installation Guideline:
+Set you own .env file
+composer install
+php artisan migrate
+php artisan db:seed --class=PermissionSeeder
+php artisan db:seed
+
+THANK YOU!

@@ -54,5 +54,17 @@ class CommentController extends Controller
         return response()->json(['message' => 'Comment deleted successfully'], 200);
     }
 
+    public function showComments(Request $request, $post_id)
+    {
+        $post = Post::find($post_id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+        $comments = Comment::where('post_id', $post_id)->get();
+
+        return response()->json(['comments' => $comments], 200);
+    }
+
     
 }

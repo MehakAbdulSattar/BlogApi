@@ -14,18 +14,6 @@ class RolesTableSeeder extends Seeder
      */
     public function run(): void
     {
-    //     $adminRole=UserRole::create(['name' => 'admin']);
-    //     $adminUser = UserRole::create([
-    //         'name' => 'Admin User',
-    //         'email' => 'admin@example.com',
-    //     ], 
-    //     [
-    //         'password' => Hash::make('admin@123'),
-    //     ]);
-
-    //     // Assign the admin role to the admin user
-    //     $adminUser->roles()->sync([$adminRole->id]);
-
-    //     UserRole::create(['name' => 'user']);
+        //
     }
 }

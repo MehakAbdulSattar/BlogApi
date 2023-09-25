@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
         'delete_user',
         'show_all_users',
         'view_post',
+        'view_user_posts'
     ];
         foreach ( $permissions as $permission)
         {
@@ -31,7 +32,7 @@ class PermissionSeeder extends Seeder
         }
 
         $role =Role::create(['name'=>'User']);
-        $role->givePermissionTo('create_post', 'edit_post', 'show_posts', 'delete_post','create_comment','view_post');
+        $role->givePermissionTo('create_post', 'edit_post', 'show_posts', 'delete_post','create_comment','view_post', 'view_user_posts');
 
 
         $role =Role::create(['name'=>'Admin']);

@@ -38,11 +38,15 @@ Route::middleware(['auth:sanctum'])->group(function ()
     Route::middleware(['permission:delete_comment'])->delete('/comments/{comment}', [CommentController::Class,'deleteComment']);
     Route::middleware(['permission:show_all_users'])->get('/users', [AuthController::class,'showAllUsers']);
     Route::middleware(['permission:view_post'])->get('/posts/{id}', [PostController::class,'showPost']);
+    Route::middleware(['permission:view_user_posts'])->get('/user/posts', [PostController::class, 'showPostsForUser']);
+
 });
 
 Route::middleware(['guest'])->group(function () 
 {
 Route::get('/posts', [PostController::class, 'index']);
 Route::post('/create/comment', [CommentController::class, 'createComment']);
+Route::get('/posts/{post_id}/comments', [CommentController::class, 'showComments']);
+
 });
 
